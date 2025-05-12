@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<TrackFinderApiError> handleBadRequestException(ResourceNotFoundException ex,
+    public ResponseEntity<TrackFinderApiError> handleBadRequestException(BadRequestException ex,
                                                                          WebRequest request) {
         TrackFinderApiError apiError = TrackFinderApiError.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(SpotifyApiException.class)
-    public ResponseEntity<TrackFinderApiError> handleSpotifyApiException(ResourceNotFoundException ex,
+    public ResponseEntity<TrackFinderApiError> handleSpotifyApiException(SpotifyApiException ex,
                                                                          WebRequest request) {
         TrackFinderApiError apiError = TrackFinderApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())

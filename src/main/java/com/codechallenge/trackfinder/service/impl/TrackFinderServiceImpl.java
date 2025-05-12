@@ -2,6 +2,7 @@ package com.codechallenge.trackfinder.service.impl;
 
 import com.codechallenge.trackfinder.dto.*;
 import com.codechallenge.trackfinder.entity.Track;
+import com.codechallenge.trackfinder.exception.BadRequestException;
 import com.codechallenge.trackfinder.exception.ResourceNotFoundException;
 import com.codechallenge.trackfinder.exception.SpotifyApiException;
 import com.codechallenge.trackfinder.repository.TrackRepository;
@@ -10,6 +11,8 @@ import com.codechallenge.trackfinder.service.TrackFinderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,11 @@ public class TrackFinderServiceImpl implements TrackFinderService {
     @Transactional
     public TrackDetailsResponse createTrack(String isrc) {
         try {
+            Optional<Track> trackOptional = trackRepository.findByIsrc(isrc);
+            if (trackOptional.isPresent()) {
+                throw new BadRequestException("Track already exists ISRC:" + isrc);
+            }
+
             SpotifySearchTrackResponse responseSearch = spotifyApiClientService.searchTrack(isrc);
 
             if (responseSearch == null
@@ -67,7 +75,7 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                     .coverUrl(coverImage.url())
                     .build();
 
-        } catch (ResourceNotFoundException | SpotifyApiException e) {
+        } catch (ResourceNotFoundException | SpotifyApiException | BadRequestException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Unexpected Error creating track with ISRC" + isrc, e);
