@@ -1,0 +1,7 @@
+package com.codechallenge.trackfinder.service;
+
+import com.codechallenge.trackfinder.dto.TrackDetailsResponse;
+
+public interface TrackFinderService {
+    TrackDetailsResponse createTrack(String isrc);
+}
