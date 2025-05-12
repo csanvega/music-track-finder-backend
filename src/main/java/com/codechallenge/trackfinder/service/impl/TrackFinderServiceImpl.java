@@ -2,6 +2,8 @@ package com.codechallenge.trackfinder.service.impl;
 
 import com.codechallenge.trackfinder.dto.*;
 import com.codechallenge.trackfinder.entity.Track;
+import com.codechallenge.trackfinder.exception.ResourceNotFoundException;
+import com.codechallenge.trackfinder.exception.SpotifyApiException;
 import com.codechallenge.trackfinder.repository.TrackRepository;
 import com.codechallenge.trackfinder.service.SpotifyApiClientService;
 import com.codechallenge.trackfinder.service.TrackFinderService;
@@ -25,7 +27,7 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                     || responseSearch.tracks() == null
                     || responseSearch.tracks().items() == null
                     || responseSearch.tracks().items().isEmpty()) {
-                throw new Exception("ISRC was not found: " + isrc);
+                throw new ResourceNotFoundException("Track", "isrc", isrc);
             }
 
             SpotifyTrackItem trackItem = responseSearch.tracks().items().get(0);
@@ -34,24 +36,25 @@ public class TrackFinderServiceImpl implements TrackFinderService {
 
             SpotifyGetAlbumResponse responseGetAlbum = spotifyApiClientService.getAlbum(albumId);
 
-            if(responseGetAlbum == null) {
-                throw new Exception("Album was not found");
+            if (responseGetAlbum == null) {
+                throw new ResourceNotFoundException("Album", "isrc", isrc);
             }
 
             SpotifyAlbumImage coverImage = responseGetAlbum.images().stream()
                     .filter(img -> img.width() == 300)
                     .findFirst()
-                    .orElseThrow(() -> new Exception("Image of 300x300 was not found"));;
+                    .orElseThrow(() -> new ResourceNotFoundException("Image", "isrc", isrc));
 
-            Track track = new Track();
-            track.setId(trackItem.id());
-            track.setIsrc(isrc);
-            track.setName(trackItem.name());
-            track.setArtistName(artist.name());
-            track.setAlbumName(responseGetAlbum.name());
-            track.setPlaybackSeconds(trackItem.duration_ms());
-            track.setIsExplicit(trackItem.explicit());
-            track.setCoverUrl(coverImage.url());
+            Track track = Track.builder()
+                    .id(trackItem.id())
+                    .isrc(isrc)
+                    .name(trackItem.name())
+                    .artistName(artist.name())
+                    .albumName(responseGetAlbum.name())
+                    .playbackSeconds(trackItem.duration_ms())
+                    .isExplicit(trackItem.explicit())
+                    .coverUrl(coverImage.url())
+                    .build();
 
             trackRepository.save(track);
 
@@ -64,15 +67,17 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                     .coverUrl(coverImage.url())
                     .build();
 
+        } catch (ResourceNotFoundException | SpotifyApiException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unexpected Error creating track with ISRC" + isrc, e);
         }
     }
 
     public TrackDetailsResponse getTrackMetadata(String isrc) {
         try {
             Track track = trackRepository.findByIsrc(isrc)
-                    .orElseThrow(() -> new Exception("Track was not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Track","isrc",isrc));
 
             return TrackDetailsResponse.builder()
                     .name(track.getName())
@@ -83,8 +88,10 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                     .coverUrl(track.getCoverUrl())
                     .build();
 
+        } catch (ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error getting track metadata",e);
         }
     }
 
@@ -92,14 +99,16 @@ public class TrackFinderServiceImpl implements TrackFinderService {
     public TrackCoverResponse getCover(String isrc) {
         try {
             Track track = trackRepository.findByIsrc(isrc)
-                    .orElseThrow(() -> new Exception("Track was not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Cover","isrc",isrc));
 
             return TrackCoverResponse.builder()
                     .coverUrl(track.getCoverUrl())
                     .build();
 
+        } catch (ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error getting track metadata",e);
         }
     }
 }

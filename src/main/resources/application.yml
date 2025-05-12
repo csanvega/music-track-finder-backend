@@ -27,3 +27,6 @@ spotify-api:
   grant-type: client_credentials
   url-auth: https://accounts.spotify.com/api/token
   url-api: https://api.spotify.com/v1
+
+cors:
+  allowed-origins: http://localhost:5173
