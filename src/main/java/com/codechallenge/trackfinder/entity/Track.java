@@ -38,7 +38,7 @@ public class Track {
     @Column(name = "is_explicit")
     private Boolean isExplicit;
 
-    @Column(name = "cover_url", length = 2048)
+    @Column(name = "cover_url", length = 500)
     private String coverUrl;
 
 }

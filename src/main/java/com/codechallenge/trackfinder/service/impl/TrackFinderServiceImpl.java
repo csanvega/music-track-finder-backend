@@ -61,6 +61,41 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                     .playbackSeconds(trackItem.duration_ms())
                     .artistName(artist.name())
                     .isExplicit(trackItem.explicit())
+                    .coverUrl(coverImage.url())
+                    .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public TrackDetailsResponse getTrackMetadata(String isrc) {
+        try {
+            Track track = trackRepository.findByIsrc(isrc)
+                    .orElseThrow(() -> new Exception("Track was not found"));
+
+            return TrackDetailsResponse.builder()
+                    .name(track.getName())
+                    .albumName(track.getAlbumName())
+                    .playbackSeconds(track.getPlaybackSeconds())
+                    .artistName(track.getArtistName())
+                    .isExplicit(track.getIsExplicit())
+                    .coverUrl(track.getCoverUrl())
+                    .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public TrackCoverResponse getCover(String isrc) {
+        try {
+            Track track = trackRepository.findByIsrc(isrc)
+                    .orElseThrow(() -> new Exception("Track was not found"));
+
+            return TrackCoverResponse.builder()
+                    .coverUrl(track.getCoverUrl())
                     .build();
 
         } catch (Exception e) {
