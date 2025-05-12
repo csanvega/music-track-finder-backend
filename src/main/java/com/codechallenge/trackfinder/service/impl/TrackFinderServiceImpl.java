@@ -1,8 +1,6 @@
 package com.codechallenge.trackfinder.service.impl;
 
-import com.codechallenge.trackfinder.dto.SpotifySearchTrackResponse;
-import com.codechallenge.trackfinder.dto.SpotifyTrackItem;
-import com.codechallenge.trackfinder.dto.TrackDetailsResponse;
+import com.codechallenge.trackfinder.dto.*;
 import com.codechallenge.trackfinder.service.SpotifyApiClientService;
 import com.codechallenge.trackfinder.service.TrackFinderService;
 import lombok.RequiredArgsConstructor;
@@ -22,22 +20,29 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                     || responseSearch.tracks() == null
                     || responseSearch.tracks().items() == null
                     || responseSearch.tracks().items().isEmpty()) {
-                throw new Exception("No se encontró track con ISRC: " + isrc);
+                throw new Exception("ISRC was not found: " + isrc);
             }
 
             SpotifyTrackItem trackItem = responseSearch.tracks().items().get(0);
+            SpotifyArtist artist = trackItem.artists().get(0);
+            String albumId = trackItem.album().id();
+
+            SpotifyGetAlbumResponse responseGetAlbum = spotifyApiClientService.getAlbum(albumId);
+
+            if(responseGetAlbum == null) {
+                throw new Exception("Album was not found");
+            }
 
             return TrackDetailsResponse.builder()
                     .name(trackItem.name())
-                    .albumName("album")
+                    .albumName(responseGetAlbum.name())
                     .playbackSeconds(trackItem.duration_ms())
-                    .artistName("Kanye West")
+                    .artistName(artist.name())
                     .isExplicit(trackItem.explicit())
                     .build();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 }

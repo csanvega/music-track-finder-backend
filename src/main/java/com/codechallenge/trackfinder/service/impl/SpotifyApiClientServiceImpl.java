@@ -1,6 +1,7 @@
 package com.codechallenge.trackfinder.service.impl;
 
 import com.codechallenge.trackfinder.config.SpotifyApiProperties;
+import com.codechallenge.trackfinder.dto.SpotifyGetAlbumResponse;
 import com.codechallenge.trackfinder.dto.SpotifySearchTrackResponse;
 import com.codechallenge.trackfinder.dto.SpotifyTokenResponse;
 import com.codechallenge.trackfinder.service.SpotifyApiClientService;
@@ -46,6 +47,20 @@ public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .retrieve()
                 .bodyToMono(SpotifySearchTrackResponse.class)
+                .block();
+
+    }
+
+    @Override
+    public SpotifyGetAlbumResponse getAlbum(String id) {
+        String token = getToken();
+
+        return webClient
+                .get()
+                .uri(spotifyApiProperties.getUrlApi() + "/albums/" + id)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                .retrieve()
+                .bodyToMono(SpotifyGetAlbumResponse.class)
                 .block();
 
     }
