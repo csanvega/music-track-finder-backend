@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface TrackRepository extends JpaRepository<Track, String> {
     Optional<Track> findByIsrc(String isrc);
-    boolean existsByIsrc(String isrc);
 }
