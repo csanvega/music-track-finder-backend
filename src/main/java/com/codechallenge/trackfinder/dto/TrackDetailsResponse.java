@@ -12,4 +12,5 @@ public class TrackDetailsResponse {
     private String albumName;
     private Integer playbackSeconds;
     private Boolean isExplicit;
+    private String coverUrl;
 }
