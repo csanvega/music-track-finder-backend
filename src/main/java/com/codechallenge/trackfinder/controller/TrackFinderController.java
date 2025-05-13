@@ -4,13 +4,15 @@ import com.codechallenge.trackfinder.dto.CreateTrackRequest;
 import com.codechallenge.trackfinder.dto.TrackCoverResponse;
 import com.codechallenge.trackfinder.dto.TrackDetailsResponse;
 import com.codechallenge.trackfinder.service.TrackFinderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/codechallenge")
 @RequiredArgsConstructor
+@CrossOrigin("${cors.allowed-origins}")
 public class TrackFinderController {
 
     private final TrackFinderService trackFinderService;
@@ -18,7 +20,8 @@ public class TrackFinderController {
     @PostMapping("/track")
     public ResponseEntity<TrackDetailsResponse> createTrack(@RequestBody CreateTrackRequest request) {
         TrackDetailsResponse trackDetails = trackFinderService.createTrack(request.getIsrc());
-        return ResponseEntity.ok(trackDetails);
+        //return ResponseEntity.ok(trackDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).body(trackDetails);
     }
 
     @GetMapping("/track/{isrc}")
