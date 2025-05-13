@@ -1,6 +1,7 @@
 package com.codechallenge.trackfinder.service.impl;
 
 import com.codechallenge.trackfinder.dto.*;
+import com.codechallenge.trackfinder.dto.spotify.*;
 import com.codechallenge.trackfinder.entity.Track;
 import com.codechallenge.trackfinder.exception.BadRequestException;
 import com.codechallenge.trackfinder.exception.ResourceNotFoundException;
@@ -87,7 +88,7 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                 throw new BadRequestException("Track already exists ISRC:" + isrc);
             }
 
-            SpotifySearchTrackResponse responseSearch = spotifyApiClientService.searchTrack(isrc);
+            SearchTrackResponse responseSearch = spotifyApiClientService.searchTrack(isrc);
 
             if (responseSearch == null
                     || responseSearch.tracks() == null
@@ -96,17 +97,17 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                 throw new ResourceNotFoundException("Track", "isrc", isrc);
             }
 
-            SpotifyTrackItem trackItem = responseSearch.tracks().items().get(0);
-            SpotifyArtist artist = trackItem.artists().get(0);
+            TrackItem trackItem = responseSearch.tracks().items().get(0);
+            Artist artist = trackItem.artists().get(0);
             String albumId = trackItem.album().id();
 
-            SpotifyGetAlbumResponse responseGetAlbum = spotifyApiClientService.getAlbum(albumId);
+            GetAlbumResponse responseGetAlbum = spotifyApiClientService.getAlbum(albumId);
 
             if (responseGetAlbum == null) {
                 throw new ResourceNotFoundException("Album", "isrc", isrc);
             }
 
-            SpotifyAlbumImage coverImage = responseGetAlbum.images().stream()
+            AlbumImage coverImage = responseGetAlbum.images().stream()
                     .filter(img -> img.width() == 300)
                     .findFirst()
                     .orElseThrow(() -> new ResourceNotFoundException("Image", "isrc", isrc));

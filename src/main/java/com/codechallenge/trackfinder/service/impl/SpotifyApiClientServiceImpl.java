@@ -1,9 +1,9 @@
 package com.codechallenge.trackfinder.service.impl;
 
 import com.codechallenge.trackfinder.config.SpotifyApiProperties;
-import com.codechallenge.trackfinder.dto.SpotifyGetAlbumResponse;
-import com.codechallenge.trackfinder.dto.SpotifySearchTrackResponse;
-import com.codechallenge.trackfinder.dto.SpotifyTokenResponse;
+import com.codechallenge.trackfinder.dto.spotify.GetAlbumResponse;
+import com.codechallenge.trackfinder.dto.spotify.SearchTrackResponse;
+import com.codechallenge.trackfinder.dto.spotify.TokenResponse;
 import com.codechallenge.trackfinder.exception.SpotifyApiException;
 import com.codechallenge.trackfinder.service.SpotifyApiClientService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
     @Override
     public String getToken() {
         try {
-            SpotifyTokenResponse response = webClient
+            TokenResponse response = webClient
                     .post()
                     .uri(spotifyApiProperties.getUrlAuth())
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -32,7 +32,7 @@ public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
                             .with("client_id", spotifyApiProperties.getClientId())
                             .with("client_secret", spotifyApiProperties.getClientSecret()))
                     .retrieve()
-                    .bodyToMono(SpotifyTokenResponse.class)
+                    .bodyToMono(TokenResponse.class)
                     .block();
 
             return Objects.requireNonNull(response).access_token();
@@ -43,7 +43,7 @@ public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
     }
 
     @Override
-    public SpotifySearchTrackResponse searchTrack(String isrc) {
+    public SearchTrackResponse searchTrack(String isrc) {
         String token = getToken();
 
         try {
@@ -52,7 +52,7 @@ public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
                     .uri(spotifyApiProperties.getUrlApi() + "/search?q=isrc:" + isrc + "&type=track")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                     .retrieve()
-                    .bodyToMono(SpotifySearchTrackResponse.class)
+                    .bodyToMono(SearchTrackResponse.class)
                     .block();
 
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
     }
 
     @Override
-    public SpotifyGetAlbumResponse getAlbum(String id) {
+    public GetAlbumResponse getAlbum(String id) {
         String token = getToken();
 
         try {
@@ -70,7 +70,7 @@ public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
                     .uri(spotifyApiProperties.getUrlApi() + "/albums/" + id)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                     .retrieve()
-                    .bodyToMono(SpotifyGetAlbumResponse.class)
+                    .bodyToMono(GetAlbumResponse.class)
                     .block();
 
         } catch (Exception e) {
