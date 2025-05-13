@@ -56,4 +56,17 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<TrackFinderApiError>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<TrackFinderApiError> handleRuntimeException(RuntimeException ex, WebRequest request) {
+
+        TrackFinderApiError apiError = TrackFinderApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .message("Unexcepted error")
+                .build();
+
+        return new ResponseEntity<TrackFinderApiError>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }

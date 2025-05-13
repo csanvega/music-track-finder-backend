@@ -7,7 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class TrackCoverResponse {
+public class ImageCover {
     private String coverUrl;
+    private byte[] imageCover;
+    private String fileNameCover;
+    private String contentTypeCover;
 }
-
