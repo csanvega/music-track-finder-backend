@@ -8,7 +8,7 @@ spring:
     version: 1.0
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/trackfinder-db
+    url: ${URL_DB}
     username: ${USERNAME_DB}
     password: ${PASSWORD_DB}
   jpa:
@@ -16,10 +16,6 @@ spring:
       ddl-auto: create
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
 
 spotify-api:
   client-id: ${API_CLIENT_ID}
@@ -27,3 +23,6 @@ spotify-api:
   grant-type: client_credentials
   url-auth: https://accounts.spotify.com/api/token
   url-api: https://api.spotify.com/v1
+
+cors:
+  allowed-origins: ${URL_FRONTEND}

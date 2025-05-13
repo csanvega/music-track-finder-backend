@@ -1,16 +1,20 @@
 package com.codechallenge.trackfinder.controller;
 
 import com.codechallenge.trackfinder.dto.CreateTrackRequest;
-import com.codechallenge.trackfinder.dto.TrackCoverResponse;
+import com.codechallenge.trackfinder.dto.ImageCover;
 import com.codechallenge.trackfinder.dto.TrackDetailsResponse;
 import com.codechallenge.trackfinder.service.TrackFinderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/codechallenge")
 @RequiredArgsConstructor
+@CrossOrigin("${cors.allowed-origins}")
 public class TrackFinderController {
 
     private final TrackFinderService trackFinderService;
@@ -18,7 +22,7 @@ public class TrackFinderController {
     @PostMapping("/track")
     public ResponseEntity<TrackDetailsResponse> createTrack(@RequestBody CreateTrackRequest request) {
         TrackDetailsResponse trackDetails = trackFinderService.createTrack(request.getIsrc());
-        return ResponseEntity.ok(trackDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).body(trackDetails);
     }
 
     @GetMapping("/track/{isrc}")
@@ -28,9 +32,12 @@ public class TrackFinderController {
     }
 
     @GetMapping("/track/{isrc}/cover")
-    public ResponseEntity<TrackCoverResponse> getCover(@PathVariable String isrc) {
-        TrackCoverResponse trackCover = trackFinderService.getCover(isrc);
-        return ResponseEntity.ok(trackCover);
+    public ResponseEntity<?> getCover(@PathVariable String isrc) {
+        ImageCover trackCover = trackFinderService.getCover(isrc);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(trackCover.getContentTypeCover()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + trackCover.getFileNameCover() + "\"")
+                .body(trackCover.getImageCover());
     }
 
 }

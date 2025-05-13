@@ -1,10 +1,10 @@
 package com.codechallenge.trackfinder.service;
 
-import com.codechallenge.trackfinder.dto.SpotifyGetAlbumResponse;
-import com.codechallenge.trackfinder.dto.SpotifySearchTrackResponse;
+import com.codechallenge.trackfinder.dto.spotify.GetAlbumResponse;
+import com.codechallenge.trackfinder.dto.spotify.SearchTrackResponse;
 
 public interface SpotifyApiClientService {
     String getToken();
-    SpotifySearchTrackResponse searchTrack(String isrc);
-    SpotifyGetAlbumResponse getAlbum(String id);
+    SearchTrackResponse searchTrack(String isrc);
+    GetAlbumResponse getAlbum(String id);
 }

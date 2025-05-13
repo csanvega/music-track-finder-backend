@@ -1,13 +1,7 @@
 package com.codechallenge.trackfinder.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name="tracks")
@@ -15,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Track {
     @Id
     @Column(name = "id", nullable = false, unique = true, length = 50)
@@ -40,5 +35,15 @@ public class Track {
 
     @Column(name = "cover_url", length = 500)
     private String coverUrl;
+
+    @Lob
+    @Column(name = "image_cover", columnDefinition = "LONGBLOB")
+    private byte[] imageCover;
+
+    @Column(name = "file_name_cover")
+    private String fileNameCover;
+
+    @Column(name = "content_type_cover")
+    private String contentTypeCover;
 
 }

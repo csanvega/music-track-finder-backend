@@ -1,6 +1,6 @@
-package com.codechallenge.trackfinder.dto;
+package com.codechallenge.trackfinder.dto.spotify;
 
-public record SpotifyTokenResponse(
+public record TokenResponse(
         String access_token,
         String token_type,
         int expires_in
