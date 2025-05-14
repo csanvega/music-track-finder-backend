@@ -9,7 +9,6 @@ import com.codechallenge.trackfinder.exception.SpotifyApiException;
 import com.codechallenge.trackfinder.repository.TrackRepository;
 import com.codechallenge.trackfinder.service.SpotifyApiClientService;
 import com.codechallenge.trackfinder.service.TrackFinderService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +19,20 @@ import java.net.URL;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class TrackFinderServiceImpl implements TrackFinderService {
 
     private final SpotifyApiClientService spotifyApiClientService;
     private final TrackRepository trackRepository;
     private final WebClient webClient;
+
+    public TrackFinderServiceImpl(
+            SpotifyApiClientService spotifyApiClientService,
+            TrackRepository trackRepository,
+            WebClient webClient) {
+        this.spotifyApiClientService = spotifyApiClientService;
+        this.trackRepository = trackRepository;
+        this.webClient = webClient;
+    }
 
     private String getContentType(String coverUrl) {
         try {

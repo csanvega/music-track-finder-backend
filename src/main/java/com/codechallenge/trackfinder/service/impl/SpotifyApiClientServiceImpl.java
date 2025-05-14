@@ -6,7 +6,6 @@ import com.codechallenge.trackfinder.dto.spotify.SearchTrackResponse;
 import com.codechallenge.trackfinder.dto.spotify.TokenResponse;
 import com.codechallenge.trackfinder.exception.SpotifyApiException;
 import com.codechallenge.trackfinder.service.SpotifyApiClientService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,11 +14,17 @@ import org.springframework.web.reactive.function.BodyInserters;
 import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor
 public class SpotifyApiClientServiceImpl implements SpotifyApiClientService {
 
     private final SpotifyApiProperties spotifyApiProperties;
     private final WebClient webClient;
+
+    public SpotifyApiClientServiceImpl(
+            SpotifyApiProperties spotifyApiProperties,
+            WebClient webClient) {
+        this.spotifyApiProperties = spotifyApiProperties;
+        this.webClient = webClient;
+    }
 
     @Override
     public String getToken() {
