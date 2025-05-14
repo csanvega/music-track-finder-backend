@@ -9,13 +9,9 @@ import com.codechallenge.trackfinder.exception.SpotifyApiException;
 import com.codechallenge.trackfinder.repository.TrackRepository;
 import com.codechallenge.trackfinder.service.SpotifyApiClientService;
 import com.codechallenge.trackfinder.service.TrackFinderService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Optional;
 
 @Service
@@ -23,68 +19,12 @@ public class TrackFinderServiceImpl implements TrackFinderService {
 
     private final SpotifyApiClientService spotifyApiClientService;
     private final TrackRepository trackRepository;
-    private final WebClient webClient;
 
     public TrackFinderServiceImpl(
             SpotifyApiClientService spotifyApiClientService,
-            TrackRepository trackRepository,
-            WebClient webClient) {
+            TrackRepository trackRepository) {
         this.spotifyApiClientService = spotifyApiClientService;
         this.trackRepository = trackRepository;
-        this.webClient = webClient;
-    }
-
-    private String getContentType(String coverUrl) {
-        try {
-            URL url = new URL(coverUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("HEAD");
-            connection.connect();
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode != HttpStatus.OK.value()) {
-                throw new IllegalArgumentException("The URL cannot be accessed" + responseCode);
-            }
-
-            String contentType = connection.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                throw new IllegalArgumentException("The image could not be downloaded");
-            }
-            return contentType;
-
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected Error downloading the image", e);
-        }
-    }
-
-    private ImageCover getCoverImageFromUrl(String coverUrl, String isrc) {
-        try {
-            String contentType = getContentType(coverUrl);
-
-            byte[] imageBytes = webClient.get()
-                    .uri(coverUrl)
-                    .retrieve()
-                    .bodyToMono(byte[].class)
-                    .block();
-
-            if (imageBytes == null || imageBytes.length == 0) {
-                throw new IllegalArgumentException("The image could not be downloaded from the URL.");
-            }
-
-            return ImageCover.builder()
-                    .coverUrl(coverUrl)
-                    .fileNameCover(isrc)
-                    .contentTypeCover(contentType)
-                    .imageCover(imageBytes)
-                    .build();
-
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected Error downloading the image", e);
-        }
     }
 
     @Transactional
@@ -119,7 +59,7 @@ public class TrackFinderServiceImpl implements TrackFinderService {
                     .findFirst()
                     .orElseThrow(() -> new ResourceNotFoundException("Image", "isrc", isrc));
 
-            ImageCover imageCover = getCoverImageFromUrl(coverImage.url(), isrc);
+            ImageCover imageCover = spotifyApiClientService.getCoverImageFromUrl(coverImage.url(), isrc);
 
             Track track = Track.builder()
                     .id(trackItem.id())
@@ -174,7 +114,6 @@ public class TrackFinderServiceImpl implements TrackFinderService {
         }
     }
 
-    @Override
     public ImageCover getCover(String isrc) {
         try {
             Track track = trackRepository.findByIsrc(isrc)
