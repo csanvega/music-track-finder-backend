@@ -69,3 +69,21 @@ URL_FRONTEND: Allowed origin for CORS (e.g., your frontend app URL)
 ./mvnw spring-boot:run
 ```
 By default, the application runs on port 8080.
+
+## Enpoints 
+
+```
+# Create a Track
+curl -X POST "http://localhost:8080/codechallenge/track" \
+     -H "Content-Type: application/json" \
+     -d '{"isrc": "USRC17607839"}'
+
+# Get track metadata
+curl -X GET "http://localhost:8080/codechallenge/track/USRC17607839" \
+     -H "Accept: application/json"
+
+# Get track image cover
+curl -X GET "http://localhost:8080/codechallenge/track/USRC17607839/cover" \
+     -H "Accept: image/*" \
+
+```
