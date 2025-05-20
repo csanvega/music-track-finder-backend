@@ -24,9 +24,6 @@ spotify-api:
   url-auth: https://accounts.spotify.com/api/token
   url-api: https://api.spotify.com/v1
 
-cors:
-  allowed-origins: ${URL_FRONTEND}
-
 springdoc:
   version: 1.0.0
   swagger-ui:
@@ -42,3 +39,8 @@ springdoc:
   group-configs:
     - group: track-api
       paths-to-match: /codechallenge/**
+
+app:
+  security:
+    username: ${APP_USERNAME}
+    password: ${APP_PASSWORD}

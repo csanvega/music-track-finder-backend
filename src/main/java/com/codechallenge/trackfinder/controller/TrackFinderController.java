@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/codechallenge")
-@CrossOrigin("${cors.allowed-origins}")
 @Tag(name = "Track Finder", description = "API for retrieving track information")
 public class TrackFinderController {
 
